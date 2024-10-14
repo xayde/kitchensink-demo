@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Kitchensink</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function loadMembers() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/members',
+                    contentType: 'application/json',
+                    success: function (response) {
+                        const membersTableBody = $('#membersTableBody');
+                        membersTableBody.empty();
+                        response.members.forEach(member => {
+                            const row = `<tr>
+                                <td>${member.id}</td>
+                                <td>${member.name}</td>
+                                <td>${member.email}</td>
+                                <td>${member.phoneNumber}</td>
+                                <td><a href="/members/${member.id}">/members/${member.id}</a></td>
+                            </tr>`;
+                            membersTableBody.append(row);
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error loading members:', error);
+                    }
+                });
+            }
+
+            loadMembers();
+
+            $('#registerForm').submit(function (event) {
+                $('#message').empty();
+                event.preventDefault();
+                const memberData = {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    phoneNumber: $('#phoneNumber').val()
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/members',
+                    contentType: 'application/json',
+                    data: JSON.stringify(memberData),
+                    success: function (response) {
+                        alert('Member registered successfully!');
+                        loadMembers();
+                        $('#registerForm').trigger("reset");
+                    },
+                    error: function (error) {
+                        $('#message').text('Error registering member: ' + error.responseJSON.message);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row mt-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">Register Member</h1>
+                    <form id="registerForm">
+                        <div class="row">
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label class="form-label" for="name">Name:</label>
+                                    <input class="form-control" type="text" id="name"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="email">Email:</label>
+                                    <input class="form-control" type="email" id="email"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="phoneNumber">Phone Number:</label>
+                                    <input class="form-control" type="text" id="phoneNumber"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <p id="message"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <button class="btn btn-outline-primary" type="submit">Register</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title">Members</h1>
+                        <div id="noMembersMessage" style="display: none;">
+                            <span>No members registered</span>
+                        </div>
+                        <table class="table" id="membersTable">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>REST Url</th>
+                            </tr>
+                            </thead>
+                            <tbody id="membersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

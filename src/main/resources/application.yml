@@ -1,0 +1,17 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: "Quickstart: kitchensink"
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: members
+      username: user
+      password: pass
+      authentication-database: admin
+
+mongock:
+  change-logs-scan-package: org.jboss.eap.quickstarts.kitchensink.migration

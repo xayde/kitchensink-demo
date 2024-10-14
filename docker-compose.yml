@@ -1,0 +1,42 @@
+services:
+
+  kitchensink:
+    build:
+      context: .
+    container_name: kitchensink
+    depends_on:
+      - mongodb
+    environment:
+      - SPRING_DATA_MONGODB_HOST=mongodb
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=members
+      - SPRING_DATA_MONGODB_USERNAME=user
+      - SPRING_DATA_MONGODB_PASSWORD=pass
+      - SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE=admin
+    networks:
+      - local
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+      - MONGO_INITDB_DATABASE=members
+    ports:
+      - 27017:27017
+    volumes:
+      - nosqldb:/data/db
+    restart: unless-stopped
+    networks:
+      - local
+
+volumes:
+  nosqldb:
+
+networks:
+  local:
+    driver: bridge
